@@ -1,0 +1,355 @@
+1. Shift Left Testing
+2. BDD cucumber
+3. Java Collections
+4. Writing xpath
+5. RESt API Testing
+6. End to end flow till Jenkins
+7. Git hub
+8. DB Queries
+9. 
+
+
+pwc
+gt global
+exl
+fluent
+staticmedia
+kraken
+veeva
+invisible
+wikimedia foundations
+
+Maven Project
+Implemented TESTNG
+Single Responsibility principle to distribute the implementation into multiple Step definitions
+Importance of Dependency Injection to share the data between the Steps file
+Page Object Pattern to drive the locators from page files
+Factory Design Pattern by writing PageObjectManager class to create objects of all Page object classes
+Configuring driver and disctributed across the files in the framework
+Running Cucumber Scenarios in parallel mode using Cucumber TestNg Runner
+Hooks for screenshots
+implement tags to run selected tests in FW
+paramaterizing the test data to run the scenarios with multiple data sets
+Creating HTML and Extent reports to run Cucumber Selenium tests
+Running tests in parallel mode and generate Extent reports with screenshots attached for failed scenarios
+Run cucumber tests using Maven and Command Line options
+Integrate the FW to CI/CD jenkins and schedule the jobs on regular time interval
+create parameterized jankin job to dynamically send the global properties at run time of job execution
+
+Getting Started
+
+Create Maven project
+What are archetype ids
+Maven provides project skeletons and maven-archetype-quickstart is suitable for Automation project as thsi is good for basic java project
+group name is package names
+Artefact id is cucumber project
+
+Add following repo dependencies to pom.xml
+Cucumber JVM Java - To write test
+Cucumber JVM TestNG Testng for test ng runner
+Selenium java
+
+Video: Selenium scenarios to automate with Cucumber Framework
+Created package features
+Created Feature file
+Wrote the Scenario in Given,When and Then format
+
+Video: Create Cucumber StepDefinition, Features & Test Runner Skeleton Files
+Created package stepDefinitions and created class file GreenKartStepDefinition.java
+Created package cucumberOptions and created class file TestNGTestRunner
+Imported cucumber options
+monochrome=true to have readable output instead of encoded
+dryRun=true for compilation
+extends AbstractTestNgCucumberTests - this class will provide everything to run the Testng tests
+
+After running the test then the output will give the step definitions which can be copied in the GreenKartStepDefinition.java file
+
+Video: Build Selenium Code for end to end Scenario and inject into Step Definition files
+Actual Selenium code for Given and When 
+
+Video: Handling Child windows and add assertions to Selenium Tests
+Added separate Then step definition for validation
+Ran the script by keeping Thread.sleep(2000)
+
+Video: Real time problems in breaking the step definitions code into multiple files
+
+Keep different stepdefinition files for different pages
+
+Video: Cucumber Dependency Injection
+1. To resolve the null pointer exeception Add dependency Injection dependencies by copying Cucumber jvm picocontainer
+2. Created class file called TestContextSetup under utils
+3. In the class file TestContextSetup you added the two variables which are shared with the Offerspage
+i.e. the driver variable and the Landingpage variable
+4. Creating a constructor (method with same class name) in the landingpage class.
+This constructor is automatically called when the object of the class is created
+5. Then you pass the instance of the TestContextSetup in the constructor
+6. Now we create a global variable in the landing page class file 
+and then using "this" keyword we pass the value of the TextContextSetup instance to the global variable. This keyword refers to this class variable.
+7. So this global variable can be used to access the variables driver and landing page across the landing page class file
+8. Replace all the driver variable with the TextContextSetup.driver in the landing page class file
+9. Now repeat the sme thing with the Landing page variable
+10. Repeat creating the constructor for the offerspage as well and Similarly replace all the driver variable with the TextContextSetup.driver in the offer page class file
+11. The idea behind having the textcontext instance declared in constructor is because when the class runs the constrctor will run in default. 
+So the instance will be called first and then all methods are run. 
+Picocontainer supports calling the class instance as an argument in a constructor. 
+If the picocontainer is not used then the compilaton will give us an error that constructor does not have zero arguments
+The constructor approach with paramters or arguments is supported by picocontainer dependency we added
+
+Video: Importance of Single Responsibility principle and loosely coupled classes
+
+1. single responsibity principle of class file and method
+2. Loosely coupled class files by having dependency injection
+3. The offerpage class file has the window handles file method inside the same method which has validation for offer page.
+ So the window handles method has to be moved to another method as part of Single Responsibility principle
+
+Video: Implement the Page Object Pattern to drive the test objects from class files
+
+1. Objects should not be hard coded in step definition files
+2. For objects for each page there should be separate class file
+3. Create a package called pageObjects and then create two class files LandingPage and OffersPage where we will store the objects of both the class files respectively
+4. First we copy the objects of the landing page to the LandingPage class file and store them in respective variables
+5. Then we create methods for each object to do action on that objects
+6. While creating the method we create the parameterized methods so that we can have the {String} values
+6. Then we create instance of the object class in the step definition file
+7. using the instance variable we access the methods created in the object class
+8. the shortname which is entered in the feature file is stored in the shortname parameter in the step definition method
+9. this value is then passed on to the parameter of the method of the object class and then finally to the variable where it is used 
+10. Now to resolve the driver issue what we are doing is we will first create a constructor of the objects class file with the parameter as Webdriver. this means this method expects driver object. The driver information is sent from stepdefinition file. So in stepdefinition file we will pass the parameter driver in the page object instance method. this driver has the information of the driver which is from textcontext
+11. Declare these variables globally which has the objects(locators) info  so that it can be reused in multiple methods and if the locator info is changed then no need to change it in multiple ways
+
+Video: Page Object implementation for offers page and driver object constructor
+
+Video: Factory Design Pattern implementation for creating page objects with example
+Factory design pattern is assigning responsibility to a single class which will have objects of all page objects classes
+Create a PageObjectManager class file which is responsible for all objects
+When you create a method to get any object class file, the return method will return object hence the class name has to be mentioned with the method name
+ 
+Like in a Factory we create new produts same way we are creating new objects for all the page objects files
+So with the Factory Design Pattern we are ensuring that we are not create new objects of page objects class files in the step definition file
+
+Video:
+Build Generic Test Utilities and pass driver in constructor from Context file
+
+Centralized Driver initilization cannot be done from one single step definiton file. So we create a class file "TestBase" under Utils package
+Webdriver has to be only initialized only once in the base class
+
+Video: How to create global properties file to drive browser and url properties
+
+For handling different URLs (QA, UAT, Prod), different envs (QA, Prod, UAT), different browsers (Firefox, Chrome) the TestBase file has to be loosely coupled. so we place everything in the properties file. The properties file has to be placed in the src/test and not in src/test/java because the Maven commands  will look for the properties file in the src/test/resorces. Also we create object of the properties class as this class has the ability to read the file contents which has .properties as the extension.
+
+For making the project work in different machines we can put FileInputStream (System.getProperty("user.dir")+"//src//test//resources//global.properties)
+
+Video: Hooks
+Hooks are implemented for precondition and post condition cleanup for your tests
+So if you want to close the browser after every scenario then you can put @after annotation and then create a method for closing the browser - driver.quit();
+So if you want to pass the driver value to Hooks.java then we can use the dependency injection of injecting the Textcontextsetup to the hooks file like how we did for step definition file. So for that we create a constructor for Hooks file and then pass the parameter for TextContextsetup into the Hooks constructor.Using the this keyword pass the value from the hooks
+So the Textcontextsetup will pass the driver value to testbase, pageobjectmanager and genericutils and Hooks 
+
+Crea
+Video: Parameterize the Selenium tests with multiple data sets using Scenario Outline
+
+Scenario Outline instead of Scenario
+Examples: Column name and values separated by pipe sign. In the Given, When and Then have the actual values replaced by <column name>
+In the step definition file replace the quotes in the When with ^ and " sign. And also the string from {string} to regular exp (.+)
+The tests run serially one by one
+
+Video: How to run Selenium Cucumber Scenarios parallely with TestNG runner annotations
+
+To run the tests parallely we will call the scenarios() method in the parent class AbstractTestNGCucumberTests. So for calling the scenarios method in the parent class we are using super keyword
+public Object[][] scenarios()
+{ return super.scenarios();
+}
+We use @Dataprovider annotation and keep the value (parallel=true)
+@DataProvider annotation is defined above the Object[][] scenarios()
+Since we are calling the same method scenarios from the parent class we are using Override annotation
+
+Video: Add new Selenium Feature file to place the product order
+create a new page object file 
+Added new objects for cart bag, check 
+
+Video: Implement Assesrtions in Step Definitions for new Selenum feature file
+
+Make entry in the page object manager class file for the new object file Checkoutpage created 
+
+Video: Implement Tagging and Run all features files together in parallel mode
+For converting String to Integer we can use Integer.parseInt(quantity)
+
+For implicit wait in the entire framework implement the below code in the TestBase class file before the get url method
+driver.manage().timeouts().implicitlyWait(Duration.OfSeconds(5))
+
+For adding tags to the runner file add the tag value to the feature file
+and in the test runner file add the tags value after monochrome=true,tags="@PlaceOrder" to run the feature files which has only PlaceOrder tag
+
+Video: Different types of report Cucumber framework can generate with example
+reports - html,xml,json,junit,extent 
+for running multiple feature files we can use tags = "tagvalue1" or "tagvalue2"
+plugin={"html:target/cucumber.html","json:target/cucumber.json"}
+
+Video: How to generate Extent Spark html reports in Cucumber Selenium framework
+
+		
+for adding extent reports add the 2 dependencies - extent report from aventstack and grasshopper dependency i.e. Cucumber 7 Adapter
+plugin= {"html:target/cucumber.html", "json:target/cucumber.json",
+"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"})
+source = extentreports
+
+For Extent report generation create properties file extent.properties file with Key and value in the properties file
+basefolder.name=test-output/ExtentReport
+basefolder.datetimepattern=d-MMM-YY HH-mm-ss
+extent.reporter.spark.start=true
+extent.reporter.spark.out=test-output/SparkReport/Spark.html
+
+Video: Generate Automatic Screenshot on test failures with code implementation in hooks
+
+In Hooks java file implement AfterStep method. AfterStep will execute after every step. 
+in the AddScreenshot method you add Scenario which is a class file defined in Cucumber which will hold all the information about the scenarios whether they are passed or failed, parameters, name
+
+@AfterStep
+	public void AddScreenshot(Scenario scenario) throws IOException
+	{
+		WebDriver driver =testContextSetup.testBase.WebDriverManager();
+		if(scenario.isFailed())
+		{
+		//screenshot
+		File sourcePath= 	((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+		byte[] fileContent = FileUtils.readFileToByteArray(sourcePath);
+		scenario.attach(fileContent, "image/png", "image");
+		
+		}
+
+In extent properties file
+basefolder.name=test-output/ExtentReport
+basefolder.datetimepattern=d-MMM-YY HH-mm-ss
+extent.reporter.spark.start=true
+extent.reporter.spark.out=test-output/SparkReport/Spark.html
+screenshot.dir=test-output/SparkReport/screenshots
+screenshot.rel.path=./screenshots/
+
+Video: How to rerun the failed Test scenarios with cucumber plugins
+In the existing TestRunner file
+@CucumberOptions(features="src/test/java/features",glue ="stepDefinitions"
+,monochrome=true, tags ="@PlaceOrder or @OffersPage",
+plugin= {"html:target/cucumber.html", "json:target/cucumber.json",
+"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:",
+"rerun:target/failed_scenarios.txt"})
+
+In the new TestRunner file which can be named as FailedTestRunner
+
+@CucumberOptions(features="@target/failed_scenarios.txt"
+@CucumberOptions(features="@target/failed_scenarios.txt",glue ="stepDefinitions"
+,monochrome=true,
+plugin= {"html:target/cucumber.html", "json:target/cucumber.json",
+"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
+
+Video: Running the Cucumber Selenium Feature files from command line options
+mvn test
+mvn test -Dcucumber.filter.tags='@PlaceOrder'
+
+Video: how to pass global properties values through command line to cucumber framework
+when you enter -Dbrowser=chrome you need to terminal to access the property file to run this command
+so for that we put System.getProperty("browser")
+
+So two declarations
+String browser_properties = prop.getpropery("browser") - this is for if you dont give the browser details 
+String browser_maven = System.getProperty("browser") - this is for if you are giving browser details from command line
+
+
+Video: Download and install Jenkins
+java -jar jenkins.war -httpPort=9090 - > to start Jenkins
+
+In browser enter localhost:9090
+once login to jenkins then create a new item
+Create a Freestyle project and then in the project properties of the job mention the source code as Git for Git and if its local then select custom and then give the path to the project 
+In build step add build step and invoke maven targets and add goals put this "test -DCucumber.filter.tags="@PlaceOrder"
+
+Video: How to parameterize jenkins jobs to pass values dynamically into tests
+In configure job there is option for selecting the option = This job is parameterized
+then select choice parameters and select 2 choice parameters, one for browser and other for tags
+
+In the Build section
+test -Dcucumber.filter.tags="@"$tags"" -Dbrowser="$browser"
+
+For scheduling
+select Build Triggers tab
+click the checkbox Build perodically
+and in the schedule box write a cron expression
+Minutes (0-59)
+hours(0-23)
+daymonth(1-31)
+month(1-12)
+dayweek(0-7) 0 and 7 are Sunday
+
+How to run with junit runner
+rename the runner file with JunitTestRunnerTest. Need to keep Test at the end of the file
+
+@Runwith(Cucumber.class) and import Cucumber options of junit
+
+Junit does not run all the scenarios parallely, it will run all the features parallely
+so if a particualar feature file has 2 scenarios then it will run one scenario from one feature file and other scenario from other feature file
+so scenarios will run sequentially
+so scenarios will be executed in same thread of a particular feature file
+So junit assigns a single thread to a feature file
+
+
+Java tutorials
+Arraylist
+Array list can have a dynamic size as compared to array
+Array list does not need a for loop for printing 
+array have to be added sequentially
+List interface accept duplicate values
+
+HashSet, treeset, Linkedhashset implements Set interface
+Set interface does not accept duplicate values
+there is no guranatee elements stored in sequential order
+
+HashMap is non sychronized and not thread safe
+So HashMap can be used for non threading applications while Hashtable can be used for multithreading applications
+
+HashTable do not allow null keys and null values in the Hashtable object
+
+Hashmap allows one null key and any number of null values
+
+
+Hashmap object values are iterated by using iterator hashtable and vector uses enumerator to iterate the values of hash table object
+
+Excel driven testing
+Creating object of Workbook and then input the file details i.e. name and location into the Workbook method parameter. Store this in the workbook variable
+Then get the total number of sheets into sheets variable
+Then using a for loop iterate through all the sheets and if sheetname is the one whcih we need we get that details in the sheet variable which is variable of XSSFSheet class using the getSheetAt(i) method
+
+Once we are in the sheet then we follow this approach
+Identify the "TestCase" column by scanning the entire 1st row
+Once the column name is identified then we scan the entire "TestCase" column to identify the "Purchase" testcase row
+once you identify the "Purchase" testcase row then you pull all the data of that row and feed it into the tests
+
+
+ID
+Xpath
+CSS Selector
+name
+Class Name
+Tag Name
+Link Text
+Partial Link Text
+
+
+workbook.getNumberOfSheets();
+
+workbook.getSheetAt(i)
+
+Iterator<Row> rows = sheet.iterator();
+firstrow = row.getnext();
+Iterator<Cell> cells = firstrow.cellIterator();
+int k = 0;
+						int column = 0;
+						while(cells.hasNext())
+						{
+							Cell value = cells.next();
+							if(value.getStringCellValue().equalsIgnoreCase("Data4"));
+									{
+										column=k;
+										System.out.println(column);
+									}
+
+ 
+ 

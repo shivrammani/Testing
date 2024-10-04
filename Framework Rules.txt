@@ -1,0 +1,22 @@
+1. Keep different step definitions files for different pages
+2. Dependency Injection - How to transfer states from one stepdefinition file to another stepdefinition file
+Dependency Injection is used with help of picocontainer format from Cucumber.
+Picocontainer helps adding arguments to the constructor
+3. Single responsibility principle means each step definition class file will handle only one responsibility. 
+This will help in easy maintenance
+4. Loosely coupled means the methods should be easily moved from one class file to another class file. This was acheived by having dependency injection. If its tightly coupled then we cannot move it from one class file to another
+5.Single responsibility principle applies to every method as well which means each method will have a single objective only
+6. Class file naming convention should match i.e. Step Definition name convention files should match with the page objects class name convention files
+7. Always try to give user defined information in the step definition page. this can be acheieved by Page object pattern by eliminating the technical information from the step definition file and keeping it in a separate class file
+8. Declare object variables as private and the methods which are using that variables are public. This will avoid updating the variable values from the other classes. So everybody can use the public methods but nobody can change the variable values apart from the class file they are being declared. this is known as encapsulation
+9. We should not create objects in Step Definition page
+10.Factory Design Pattern - to create objects for all the page object class files so as to get rid of creating objects in step definition files
+11. So with the Factory Design Pattern we are ensuring that we are not create new objects of page objects class files in the step definition file
+12. Driver initilization which is centralized should not be done in single step defnition file
+13. Initialize the driver only once in the base class
+14. Hooks for pre requisites and post requisites
+15. Scenario Outline for repeating the test multiple times
+16. Flow - > when the first line of the feature file is run the first thing it will go to the step definition file. The step defintion file has constructor. In the constructor we are creating the instance of the Textcontextsetup which is the heart of the framework When the instance is executed the constructor for that class file is by default executed. That constructor has the Webdriver manager method being called. The Webdriver manager method has the driver initialized. So this way there is no requirement for creating Before tag in the Hooks file
+17. Make sure every feature file does not mention the actions like clikcing the button etc
+18. Whenever you create a new page object file make sure you create a entry in the page object manager file
+
